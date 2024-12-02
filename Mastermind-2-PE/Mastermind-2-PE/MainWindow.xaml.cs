@@ -22,8 +22,10 @@ namespace Mastermind_2_PE
     {
         private List<string> colors = new List<string> { "Red", "Yellow", "Orange", "White", "Green", "Blue" };
         private List<string> _code;
-        private int attemptsLeft = 10;
-        private int score = 100;
+        private int _attemptsLeft = 10;
+        private int _score = 100;
+
+    
 
         public MainWindow()
         {
@@ -31,6 +33,7 @@ namespace Mastermind_2_PE
             _code = new List<string>();
             StartNewGame();
             PopulateComboBoxes();
+            StartGame();
         }
 
         private void PopulateComboBoxes()
@@ -43,6 +46,30 @@ namespace Mastermind_2_PE
             ComboBox4.ItemsSource = colorOptions;
         }
 
+
+        private void StartGame()
+        {
+            Random rand = new Random();
+            _code = new List<string>();
+            for (int i = 0; i < 4; i++)
+            {
+                _code.Add(colors[rand.Next(colors.Count)]);
+            }
+
+            _attemptsLeft = 10;
+            _score = 100;
+
+            ComboBox1.SelectedItem = null;
+            ComboBox2.SelectedItem = null;
+            ComboBox3.SelectedItem = null;
+            ComboBox4.SelectedItem = null;
+
+            ScoreLabel.Content = $"Score: {_score}";
+            AttemptsLabel.Content = $"Attempts Left: {_attemptsLeft}";
+            ListBoxHistory.Items.Clear();
+            DialogResult.ToString();
+        }
+
         private void StartNewGame()
         {
             Random rand = new Random();
@@ -52,16 +79,16 @@ namespace Mastermind_2_PE
                 _code.Add(colors[rand.Next(colors.Count)]);
             }
 
-            attemptsLeft = 10;
-            score = 100;
+            _attemptsLeft = 10;
+            _score = 100;
 
             ComboBox1.SelectedItem = null;
             ComboBox2.SelectedItem = null;
             ComboBox3.SelectedItem = null;
             ComboBox4.SelectedItem = null;
 
-            ScoreLabel.Content = $"Score: {score}";
-            AttemptsLabel.Content = $"Attempts Left: {attemptsLeft}";
+            ScoreLabel.Content = $"Score: {_score}";
+            AttemptsLabel.Content = $"Attempts Left: {_attemptsLeft}";
             ListBoxHistory.Items.Clear();
 
             MessageBox.Show("New game started! Try to guess the code.");
@@ -96,27 +123,27 @@ namespace Mastermind_2_PE
                 {
                     feedback.Add("Wrong Place");
                     UpdateBorderColor(i, Brushes.Wheat); // Incorrect position
-                    score -= 1;
+                    _score -= 1;
                 }
                 else
                 {
                     feedback.Add("Wrong");
                     UpdateBorderColor(i, Brushes.Transparent); // Incorrect color
-                    score -= 2;
+                    _score -= 2;
                 }
             }
 
-            ScoreLabel.Content = $"Score: {score}";
-            AttemptsLabel.Content = $"Attempts Left: {attemptsLeft}";
+            ScoreLabel.Content = $"Score: {_score}";
+            AttemptsLabel.Content = $"Attempts Left: {_attemptsLeft}";
             ListBoxHistory.Items.Add($"Attempt: {string.Join(", ", selectedColors)} | Feedback: {string.Join(", ", feedback)}");
 
-            attemptsLeft--;
+            _attemptsLeft--;
             if (selectedColors.SequenceEqual(_code))
             {
-                MessageBox.Show($"You guessed the code! Final Score: {score}");
+                MessageBox.Show($"You guessed the code! Final Score: {_score}");
                 AskToPlayAgain();
             }
-            else if (attemptsLeft == 0)
+            else if (_attemptsLeft == 0)
             {
                 MessageBox.Show($"Game over! The code was: {string.Join(", ", _code)}");
                 AskToPlayAgain();
@@ -155,7 +182,7 @@ namespace Mastermind_2_PE
             if (sender is ComboBox comboBox)
             {
                 string selectedColor = comboBox.SelectedItem?.ToString() ?? "";
-                Brush colorBrush = selectedColor switch
+                SolidColorBrush solidColorBrush = selectedColor switch 
                 {
                     "Red" => Brushes.Red,
                     "Yellow" => Brushes.Yellow,
@@ -165,6 +192,8 @@ namespace Mastermind_2_PE
                     "Blue" => Brushes.Blue,
                     _ => Brushes.Transparent
                 };
+                SolidColorBrush _solidColorBrush = solidColorBrush;
+                Brush colorBrush = _solidColorBrush;
 
                 if (comboBox == ComboBox1) FeedbackEllipse1.Fill = colorBrush;
                 if (comboBox == ComboBox2) FeedbackEllipse2.Fill = colorBrush;
